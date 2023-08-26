@@ -1,5 +1,6 @@
 import scrapy
 
+
 class LinksSpider(scrapy.Spider):
     name = "links"
     allowed_domains = ["birja-in.az"]
@@ -16,8 +17,9 @@ class LinksSpider(scrapy.Spider):
             }
 
         # Find the next page's URL
-        next_page = response.css('.navigator_page_podcategory a.pageoff:contains("»")::attr(href)').get()
-
-        if next_page:
-            # Follow the pagination link
-            yield response.follow(next_page, callback=self.parse)
+        next_page_span = response.css('.navigator_page_podcategory span.pageoff:contains("»")')
+        if next_page_span:
+            next_page = next_page_span.xpath('parent::a/@href').get()
+            if next_page:
+                # Follow the pagination link
+                yield response.follow(next_page, callback=self.parse)
